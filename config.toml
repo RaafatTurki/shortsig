@@ -1,0 +1,16 @@
+port = 3000
+
+whitelist = [
+  "192.168.1.69",
+  "192.168.1.101",
+]
+
+[cmds]
+lock = "loginctl lock-session $XDG_SESSION_ID"
+sleep = "systemctl suspend"
+poweroff = "systemctl poweroff"
+reboot = "systemctl reboot"
+rofi = "$LAUNCHER"
+color = "$COLOR_PICKER"
+fm = "$FM"
+ls = "ls"
