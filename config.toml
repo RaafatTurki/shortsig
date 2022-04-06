@@ -5,12 +5,25 @@ whitelist = [
   "192.168.1.101",
 ]
 
-[cmds]
-lock = "loginctl lock-session $XDG_SESSION_ID"
-sleep = "systemctl suspend"
-poweroff = "systemctl poweroff"
-reboot = "systemctl reboot"
-rofi = "$LAUNCHER"
-color = "$COLOR_PICKER"
-fm = "$FM"
-ls = "ls"
+[routines.poweroff]
+linux = "poweroff"
+
+[routines.reboot]
+linux = "reboot"
+
+[routines.suspend]
+linux = "systemctl suspend"
+
+[routines.lock]
+linux = "loginctl lock-session $XDG_SESSION_ID"
+
+[routines.ls]
+linux = "ls"
+
+# sleep = "systemctl suspend"
+# poweroff = "systemctl poweroff"
+# reboot = "systemctl reboot"
+# rofi = "$LAUNCHER"
+# color = "$COLOR_PICKER"
+# fm = "$FM"
+# ls = "ls"

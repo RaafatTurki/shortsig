@@ -5,19 +5,33 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"runtime"
+	"shortsig/config"
 )
 
-func ExecCommand(conn net.Conn, payload []string, cmdsTable map[string]string) {
-  cmdKey := payload[0]
-  cmd, ok := cmdsTable[cmdKey]
-  if !ok { fmt.Printf("client(%s): Invalid Command Payload %s", conn.RemoteAddr(), cmdKey) }
+func ExecCommand(conn net.Conn, payload []string, routines map[string]config.Routine) {
+  routineName := payload[0]
+  routine, ok := routines[routineName]
+  if !ok { fmt.Printf("client(%s): Invalid Command Payload %s", conn.RemoteAddr(), routineName) }
 
-  cmd_exec := exec.Command("sh", "-c", cmd)
+  var cmd *exec.Cmd
 
-  cmd_exec.Stdin = os.Stdin;
-  cmd_exec.Stdout = os.Stdout;
-  cmd_exec.Stderr = os.Stderr;
-  err := cmd_exec.Run()
+  platform := runtime.GOOS
+  switch platform {
+  case "windows":
+    cmd = exec.Command("cmd", "/C", routine.Windows)
+  case "darwin":
+    cmd = exec.Command("sh", "-c", routine.Darwin)
+  case "linux":
+    cmd = exec.Command("sh", "-c", routine.Linux)
+  default:
+    cmd = exec.Command("sh", "-c", routine.Other)
+  }
+
+  cmd.Stdin = os.Stdin;
+  cmd.Stdout = os.Stdout;
+  cmd.Stderr = os.Stderr;
+  err := cmd.Run()
   if err != nil { fmt.Printf("%v\n", err) }
 }
 

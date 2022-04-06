@@ -1,15 +1,22 @@
-package main
+package config
 
 import (
 	"io/ioutil"
+	. "shortsig/log"
 
 	"github.com/BurntSushi/toml"
 )
 
+type Routine struct {
+  Linux string
+  Windows string
+  Darwin string
+  Other string
+}
 
 type Config struct {
   Port uint16
-  Cmds map[string]string
+  Routines map[string]Routine
   Whitelist []string
 }
 
@@ -17,10 +24,10 @@ func ParseConfigFile(file_path string) Config {
   var conf Config
 
   content, readErr := ioutil.ReadFile(file_path)
-  if readErr != nil { panic(readErr) }
+  Assert(readErr)
 
   _, parseErr := toml.Decode(string(content), &conf)
-  if parseErr != nil { panic(readErr) }
+  Assert(parseErr)
 
   return conf
 }
