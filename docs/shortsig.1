@@ -1,0 +1,29 @@
+.TH SHORTSIG 1 "April 2022" "version 1"
+.SH NAME
+shortsig - a remote routine execution through TCP
+
+.SH SYNOPSIS
+.B shortsig
+.RB [ -h ]
+.RB [ -c 
+.IR config_file ]
+
+.SH DESCRIPTION
+.B shortsig
+spawns a tcp server that executes one of many predefined commands depending on the incoming traffic.
+
+.SH OPTIONS
+.TP
+.B -h
+shows usage message and exits.
+.TP
+.BI -c " config"
+path to config file.
+
+.SH SEE ALSO
+\fBshortsig\fR is was inspired by \fIunified_remote_server\fR.
+
+.SH AUTHOR
+Written by Raafat Turki (raafat.turki@pm.me).
+.P
+The project is located at https://github.com/RaafatTurki/shortsig
