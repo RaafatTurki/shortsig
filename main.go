@@ -52,7 +52,7 @@ func handleConnection(conn net.Conn) {
   s := bufio.NewScanner(conn)
 
   for s.Scan() {
-    // Log(NET, "client:(%s): Incoming Data", conn.RemoteAddr())
+    Log(DEBUG, "client:(%s): Incoming Data", conn.RemoteAddr())
     data := s.Text()
 
     if !handleTCPCmd(data, conn) {

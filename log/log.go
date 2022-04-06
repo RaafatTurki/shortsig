@@ -5,6 +5,8 @@ import (
 	"net"
 )
 
+const maxLogLevel = NET
+
 const (
   red     = "\033[97;41m"
 	green   = "\033[90;42m"
@@ -24,7 +26,7 @@ const (
   DEBUG
 )
 
-var logTypeNames = map[int]string{
+var logLvlNames = map[int]string{
   ERR:    "ERROR",
   WARN:   "WARN",
   INFO:   "INFO",
@@ -32,7 +34,7 @@ var logTypeNames = map[int]string{
   DEBUG:  "DEBUG",
 }
 
-var logTypeColors = map[int]string{
+var logLvlColors = map[int]string{
   ERR: red,
   WARN: yellow,
   INFO: green,
@@ -40,24 +42,24 @@ var logTypeColors = map[int]string{
   DEBUG: magenta,
 }
 
-func LogMessageFoprmatter(logType int, msgFmtStr string, msgData... any) string {
+func LogMessageFoprmatter(logLvl int, msgFmtStr string, msgData... any) string {
   message := fmt.Sprintf(msgFmtStr, msgData...)
 
   logMessage := fmt.Sprintf(
     "%s %s %s %s\n",
-    logTypeColors[logType], logTypeNames[logType], reset,
+    logLvlColors[logLvl], logLvlNames[logLvl], reset,
     message,
   )
 
   return logMessage
 }
 
-func LogMessageFoprmatterNoColor(logType int, msgFmtStr string, msgData... any) string {
+func LogMessageFoprmatterNoColor(logLvl int, msgFmtStr string, msgData... any) string {
   message := fmt.Sprintf(msgFmtStr, msgData...)
 
   logMessage := fmt.Sprintf(
     "%s %s\n",
-    logTypeNames[logType],
+    logLvlNames[logLvl],
     message,
   )
 
@@ -65,24 +67,26 @@ func LogMessageFoprmatterNoColor(logType int, msgFmtStr string, msgData... any) 
 }
 
 
-func Log(logType int, msgFmtStr string, msgData... any) {
-  fmt.Print(LogMessageFoprmatter(logType, msgFmtStr, msgData...))
+func Log(logLvl int, msgFmtStr string, msgData... any) {
+  if logLvl > maxLogLevel { return }
+  fmt.Print(LogMessageFoprmatter(logLvl, msgFmtStr, msgData...))
 }
 
-func TCPLog(conn net.Conn, logType int, msgFmtStr string, msgData... any) {
-  conn.Write([]byte(fmt.Sprintf("%s", LogMessageFoprmatterNoColor(logType, msgFmtStr, msgData...))))
+func TCPLog(conn net.Conn, logLvl int, msgFmtStr string, msgData... any) {
+  if logLvl > maxLogLevel { return }
+  conn.Write([]byte(fmt.Sprintf("%s", LogMessageFoprmatterNoColor(logLvl, msgFmtStr, msgData...))))
 }
 
-func LogAndTCPLog(conn net.Conn, logType int, msgFmtStr string, msgData... any) {
-  Log(logType, msgFmtStr, msgData...)
-  TCPLog(conn, logType, msgFmtStr, msgData...)
+func LogAndTCPLog(conn net.Conn, logLvl int, msgFmtStr string, msgData... any) {
+  Log(logLvl, msgFmtStr, msgData...)
+  TCPLog(conn, logLvl, msgFmtStr, msgData...)
 }
 
 func Assert(err error) {
   if err != nil {
     logMessage := fmt.Sprintf(
       "%s %s %s %s\n",
-      logTypeColors[ERR], logTypeNames[ERR], reset,
+      logLvlColors[ERR], logLvlNames[ERR], reset,
       err,
     )
 
