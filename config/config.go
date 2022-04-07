@@ -3,7 +3,7 @@ package config
 import (
 	. "shortsig/log"
 
-	flag "github.com/spf13/pflag"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -29,10 +29,10 @@ func ParseConfigs() Config {
   // defining config file attributes
   viper.SetConfigName("config")
   viper.SetConfigType("toml")
-  viper.AddConfigPath("/etc/shortsig/")
-  viper.AddConfigPath("$XDG_CONFIG_HOME/shortsig/")
-  viper.AddConfigPath("$HOME/.config/shortsig/")
-  viper.AddConfigPath("/home/$USER/.config/shortsig/")
+  viper.AddConfigPath("/etc/shortsig")
+  viper.AddConfigPath("$XDG_CONFIG_HOME/shortsig")
+  viper.AddConfigPath("$HOME/.config/shortsig")
+  viper.AddConfigPath("/home/$USER/.config/shortsig")
   viper.AddConfigPath(".")
   err := viper.ReadInConfig()
   Assert(err)
@@ -43,8 +43,8 @@ func ParseConfigs() Config {
   Assert(unmarshailErr)
 
   // flags
-  flag.Uint16VarP(&conf.Port, "port", "p", conf.Port, "help message for flagname")
-  flag.Parse()
+  pflag.Uint16VarP(&conf.Port, "port", "p", conf.Port, "help message for flagname")
+  pflag.Parse()
 
   return conf
 }
