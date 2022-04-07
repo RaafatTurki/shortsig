@@ -13,7 +13,8 @@ import (
 var conf config.Config
 
 func main() {
-  conf = config.ParseConfigFile("config.toml")
+  // parse config
+  conf = config.ParseConfigs()
 
   // spinning tcp server
   listener, err := net.Listen("tcp", fmt.Sprintf(":%d", conf.Port))
@@ -42,7 +43,7 @@ func main() {
     // }
 
     // accepting connections and handling them in a new thread
-    LogAndTCPLog(conn, NET, "connection accepted %s", conn.RemoteAddr().String())
+    LogAndTCPLog(conn, NET, "%s | connection accepted", conn.RemoteAddr())
     go handleConnection(conn)
   }
 }
@@ -52,7 +53,7 @@ func handleConnection(conn net.Conn) {
   s := bufio.NewScanner(conn)
 
   for s.Scan() {
-    Log(DEBUG, "client:(%s): Incoming Data", conn.RemoteAddr())
+    Log(DEBUG, "%s | Incoming Data", conn.RemoteAddr())
     data := s.Text()
 
     if !handleTCPCmd(data, conn) {
@@ -67,16 +68,16 @@ func handleTCPCmd(TCPData string, conn net.Conn) bool {
   TCPCmdArgs := TCPDataArr[1:]
 
   switch TCPCmd {
-    case "":
-      LogAndTCPLog(conn, NET, "client(%s): Empty TCP Command", conn.RemoteAddr())
-    case "exit":
-      LogAndTCPLog(conn, NET, "client(%s): Disconnected", conn.RemoteAddr())
-    case "cmd":
-      LogAndTCPLog(conn, NET, "client(%s): Executing TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
-      service.ExecCommand(conn, TCPCmdArgs, conf.Routines)
-      LogAndTCPLog(conn, NET, "client(%s): Executed TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
-    default:
-      LogAndTCPLog(conn, NET, "client(%s): Invalid TCP Command", conn.RemoteAddr().String())
+  case "":
+    LogAndTCPLog(conn, NET, "%s | Empty TCP Command", conn.RemoteAddr())
+  case "exit":
+    LogAndTCPLog(conn, NET, "%s | Disconnected", conn.RemoteAddr())
+  case "exec":
+    LogAndTCPLog(conn, NET, "%s | Executing TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
+    service.ExecRoutine(conn, TCPCmdArgs, conf.Routines)
+    LogAndTCPLog(conn, NET, "%s | Executed TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
+  default:
+    LogAndTCPLog(conn, NET, "%s | Invalid TCP Command", conn.RemoteAddr().String())
   }
   return true
 }

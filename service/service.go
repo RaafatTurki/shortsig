@@ -9,10 +9,10 @@ import (
 	"shortsig/config"
 )
 
-func ExecCommand(conn net.Conn, payload []string, routines map[string]config.Routine) {
+func ExecRoutine(conn net.Conn, payload []string, routines map[string]config.Routine) {
   routineName := payload[0]
   routine, ok := routines[routineName]
-  if !ok { fmt.Printf("client(%s): Invalid Command Payload %s", conn.RemoteAddr(), routineName) }
+  if !ok { fmt.Printf("%s | Invalid Routine %s", conn.RemoteAddr(), routineName) }
 
   var cmd *exec.Cmd
 
