@@ -1,0 +1,21 @@
+port = 4321
+
+[routines.poweroff]
+linux = "systemctl poweroff"
+
+[routines.reboot]
+linux = "systemctl reboot"
+
+[routines.suspend]
+linux = "systemctl suspend"
+
+[routines.lock]
+linux = "loginctl lock-session $XDG_SESSION_ID"
+
+[routines.sleep]
+linux = "sleep 2"
+
+[routines.ls]
+linux = "ls"
+darwin = "ls"
+windows = "dir"

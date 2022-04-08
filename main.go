@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"shortsig/config"
-	. "shortsig/log"
-	"shortsig/service"
+	"shortsig/core/config"
+	"shortsig/core/log"
+	"shortsig/core/service"
 	"strings"
 )
 
@@ -18,14 +18,14 @@ func main() {
 
   // spinning tcp server
   listener, err := net.Listen("tcp", fmt.Sprintf(":%d", conf.Port))
-  Assert(err)
-  Log(INFO, "listening on port %d", conf.Port)
+  log.PanicErr(err)
+  log.PrintConsole(log.INFO, "listening on port %d", conf.Port)
 
   // listening to incoming tcp connections
   for {
     conn, err := listener.Accept()
     if err != nil {
-      Log(WARN, "connection accept error %s", err)
+      log.PrintConsole(log.WARN, "connection accept error %s", err)
       continue
     }
 
@@ -43,7 +43,7 @@ func main() {
     // }
 
     // accepting connections and handling them in a new thread
-    LogAndTCPLog(conn, NET, "%s | connection accepted", conn.RemoteAddr())
+    log.PrintConsoleAndTCP(conn, log.NET, "%s | connection accepted", conn.RemoteAddr())
     go handleConnection(conn)
   }
 }
@@ -53,7 +53,7 @@ func handleConnection(conn net.Conn) {
   s := bufio.NewScanner(conn)
 
   for s.Scan() {
-    Log(DEBUG, "%s | Incoming Data", conn.RemoteAddr())
+    log.PrintConsole(log.DEBUG, "%s | Incoming Data", conn.RemoteAddr())
     data := s.Text()
 
     if !handleTCPCmd(data, conn) {
@@ -69,15 +69,15 @@ func handleTCPCmd(TCPData string, conn net.Conn) bool {
 
   switch TCPCmd {
   case "":
-    LogAndTCPLog(conn, NET, "%s | Empty TCP Command", conn.RemoteAddr())
+    log.PrintConsoleAndTCP(conn, log.NET, "%s | Empty TCP Command", conn.RemoteAddr())
   case "exit":
-    LogAndTCPLog(conn, NET, "%s | Disconnected", conn.RemoteAddr())
+    log.PrintConsoleAndTCP(conn, log.NET, "%s | Disconnected", conn.RemoteAddr())
   case "exec":
-    LogAndTCPLog(conn, NET, "%s | Executing TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
+    log.PrintConsoleAndTCP(conn, log.NET, "%s | Executing TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
     service.ExecRoutine(conn, TCPCmdArgs, conf.Routines)
-    LogAndTCPLog(conn, NET, "%s | Executed TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
+    log.PrintConsoleAndTCP(conn, log.NET, "%s | Executed TCP Command %s", conn.RemoteAddr(), TCPCmdArgs)
   default:
-    LogAndTCPLog(conn, NET, "%s | Invalid TCP Command", conn.RemoteAddr().String())
+    log.PrintConsoleAndTCP(conn, log.NET, "%s | Invalid TCP Command", conn.RemoteAddr().String())
   }
   return true
 }

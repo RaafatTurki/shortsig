@@ -6,7 +6,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"shortsig/config"
+	"shortsig/core/config"
+	"shortsig/core/log"
 )
 
 func ExecRoutine(conn net.Conn, payload []string, routines map[string]config.Routine) {
@@ -32,7 +33,7 @@ func ExecRoutine(conn net.Conn, payload []string, routines map[string]config.Rou
   cmd.Stdout = os.Stdout;
   cmd.Stderr = os.Stderr;
   err := cmd.Run()
-  if err != nil { fmt.Printf("%v\n", err) }
+  log.PrintErr(err)
 }
 
 // THIS IS A GIANT SECURITY HAZARD AND SHOULD NEVER BE USED OUTSIDE TESTING
