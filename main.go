@@ -16,6 +16,12 @@ func main() {
   // parse config
   conf = config.ParseConfigs()
 
+  // print version
+  if conf.ShowVersion {
+    log.PrintConsole(log.INFO, "version %s", "1.0.1")
+    return
+  }
+
   // spinning tcp server
   listener, err := net.Listen("tcp", fmt.Sprintf(":%d", conf.Port))
   log.PanicErr(err)

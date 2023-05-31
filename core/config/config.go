@@ -20,6 +20,7 @@ type Config struct {
   Port uint16
   Routines Routines
   Whitelist []string
+  ShowVersion bool
 }
 
 func ParseConfigs(configFilePaths... string) Config {
@@ -49,7 +50,8 @@ func ParseConfigs(configFilePaths... string) Config {
   log.PanicErr(unmarshailErr)
 
   // flags
-  pflag.Uint16VarP(&conf.Port, "port", "p", conf.Port, "port number for tcp server")
+  pflag.Uint16VarP(&conf.Port, "port", "p", conf.Port, "set TCP port")
+  pflag.BoolVarP(&conf.ShowVersion, "version", "v", false, "display version information")
   pflag.Parse()
 
   return conf
